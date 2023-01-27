@@ -18,6 +18,7 @@
   "dependencies": {
     "dotenv": "^16.0.3",
     "express": "^4.18.2",
-    "mail-listener-typescript": "^1.0.18"
+    "mail-listener-typescript": "^1.0.18",
+    "xlsx": "^0.18.5"
   }
 }
