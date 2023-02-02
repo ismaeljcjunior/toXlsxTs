@@ -9,12 +9,11 @@ const app = express();
 app.get('/download', async (req, res: express.Response) => {
   let resultSQL
   let resultSQLLength
-  const testJsonToXlsx = async () => {
+
     const SELECT_BASE = process.env.SELECT_BASE as string
     resultSQL = await dbMssql.query(SELECT_BASE, { type: QueryTypes.SELECT })
     resultSQLLength = resultSQL.length
-  }
-  testJsonToXlsx()
+ 
 
   if (resultSQL === undefined || resultSQL === null) {
     return
@@ -25,14 +24,18 @@ app.get('/download', async (req, res: express.Response) => {
 
   const headers = Object.keys(resultSQL[0]);
   const data = [];
-
-  for (let i = 0; i < resultSQLLength; i++) {
+  for (let i = 0; i < jsonData.length; i++) {
     const row = resultSQL[i];
     const dataRow = [];
     for (let j = 0; j < headers.length; j++) {
       const header = headers[j];
-      const value = row[header];
-      dataRow.push(typeof value === 'number' || typeof value === 'object' ? JSON.stringify(value) : value);
+      let value = row[header];
+      if (typeof value === 'object') {
+        value = JSON.stringify(value);
+      } else if (typeof value !== 'string') {
+        value = value.toString();
+      }
+      dataRow.push(value);
     }
     data.push(dataRow);
   }
@@ -53,5 +56,4 @@ app.get('/download', async (req, res: express.Response) => {
 app.listen(3000, () => {
   console.log('Server running on http://localhost:3000');
 });
-
 
